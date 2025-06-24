@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UAE National ID Enrollment System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #008000;
+            --primary-dark: #006400;
+            --secondary: #FF0000;
+            --accent: #FFD700;
+            --dark: #333333;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --white: #ffffff;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Poppins', 'Noto Sans Arabic', sans-serif;
+            background: linear-gradient(135deg, #f0f5ff 0%, #e6f7ee 100%);
+            min-height: 100vh;
+            /* display: flex;
+            justify-content: center;
+            align-items: center; */
+            padding: 40px 20px;
+            color: var(--dark);
+            direction: ltr;
+        }
+
+        .container {
+            display: flex;
+            max-width: 1200px;
+            width: 100%;
+            box-shadow: var(--shadow);
+            border-radius: 20px;
+            overflow: hidden;
+            background-color: var(--white);
+            /* height: 90vh; */
+            margin: 0 auto;
+            min-height: 600px;
+            position: relative;
+        }
+
+        .brand-section {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .brand-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .brand-section p {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            max-width: 400px;
+        }
+
+        .brand-logo {
+            width: 120px;
+            height: 120px;
+            background-color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .brand-logo img {
+            width: 80px;
+            height: 80px;
+        }
+
+        .features {
+            margin-top: 20px;
+            text-align: left;
+            width: 100%;
+            max-width: 300px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .features p {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        .form-section {
+            flex: 2;
+            padding: 50px;
+            background-color: var(--white);
+            /* overflow-y: auto;    */
+        }
+
+        .progress-bar {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: #e9ecef;
+            z-index: 1;
+        }
+
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 2;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--gray);
+            border: 3px solid #e9ecef;
+            transition: all 0.3s;
+        }
+
+        .step-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+            transition: all 0.3s;
+        }
+
+        .progress-step.active .step-number {
+            background-color: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+        }
+
+        .progress-step.active .step-label {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-title {
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .form-subtitle {
+            font-size: 1.1rem;
+            color: var(--gray);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .input-with-icon {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 15px 15px 15px 50px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 128, 0, 0.2);
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-col {
+            flex: 1;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background-color: var(--primary);
+            color: var(--white);
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 100, 0, 0.2);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(0, 128, 0, 0.1);
+        }
+
+        .id-display {
+            background-color: #e6f7ee;
+            border: 2px dashed var(--primary);
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .id-label {
+            font-size: 1rem;
+            color: var(--gray);
+            margin-bottom: 10px;
+        }
+
+        .id-number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: var(--primary);
+        }
+
+        .hand-capture-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 40px 0;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .hand-box {
+            text-align: center;
+            position: relative;
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .hand-placeholder {
+            width: 100%;
+            height: 250px;
+            background-color: #f8f9fa;
+            border: 3px dashed #dee2e6;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            overflow: hidden;
+        }
+
+        .hand-placeholder:hover {
+            border-color: var(--primary);
+            background-color: #e6f7ee;
+        }
+
+        .hand-placeholder i {
+            font-size: 5rem;
+            color: #ced4da;
+            transition: all 0.3s;
+        }
+
+        .hand-label {
+            margin-top: 15px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .captured {
+            border-color: var(--primary);
+            background-color: rgba(0, 128, 0, 0.05);
+        }
+
+        .captured i {
+            color: var(--primary);
+        }
+
+        .hand-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: none;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 20px;
+        }
+
+        .success-message {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .success-icon {
+            font-size: 5rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .success-title {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .success-text {
+            font-size: 1.2rem;
+            color: var(--gray);
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .camera-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .camera-overlay:not(.hidden) {
+            display: flex;
+        }
+        .camera-container {
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+        }
+
+        #camera-preview {
+            width: 100%;
+            border-radius: 10px;
+            border: 2px solid var(--white);
+        }
+
+        .camera-controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .capture-btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: var(--white);
+            border: 5px solid var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .capture-btn i {
+            font-size: 2rem;
+            color: var(--primary);
+        }
+
+        .close-camera {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: var(--white);
+            font-size: 2rem;
+            cursor: pointer;
+        }
+        .recapture-btn {
+            display: none;
+            margin-top: 10px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .hand-box.captured .recapture-btn {
+            display: inline-block;
+        }
+        
+        .hand-box.captured .capture-btn {
+            display: none;
+        }
+
+        .hand-instruction {
+            color: var(--white);
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        @media (max-width: 992px) {
+            .container {
+                flex-direction: column;
+                /* height: auto; */
+            }
+            
+            .brand-section {
+                padding: 30px;
+            }
+            
+            .form-section {
+                padding: 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .hand-capture-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="brand-section">
+            <div class="brand-logo">
+                <!-- UAE Flag Colors -->
+                <svg width="80" height="80" viewBox="0 0 80 80">
+                    <rect width="80" height="80" fill="#008000"/>
+                    <rect x="0" y="0" width="26.67" height="80" fill="#FF0000"/>
+                    <rect x="26.67" y="0" width="26.67" height="80" fill="#FFFFFF"/>
+                    <rect x="53.34" y="0" width="26.66" height="80" fill="#000000"/>
+                </svg>
+            </div>
+            <h1>UAE Biometric ID Enrollment</h1>
+            <p>Secure your identity with the UAE's national identification system. Complete your registration in three simple steps.</p>
+            <div class="features">
+                <p><i class="fas fa-shield-alt"></i> Secure & Encrypted</p>
+                <p><i class="fas fa-bolt"></i> Fast Processing</p>
+                <p><i class="fas fa-lock"></i> Government Certified</p>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <div class="progress-bar">
+                <div class="progress-step active" id="step1">
+                    <div class="step-number">1</div>
+                    <div class="step-label">Personal Details</div>
+                </div>
+                <div class="progress-step" id="step2">
+                    <div class="step-number">2</div>
+                    <div class="step-label">Biometrics</div>
+                </div>
+                <div class="progress-step" id="step3">
+                    <div class="step-number">3</div>
+                    <div class="step-label">Confirmation</div>
+                </div>
+            </div>
+            
+            <div class="form-container">
+                <!-- Step 1: Personal Details -->
+                <div id="personal-details">
+                    <h2 class="form-title">Personal Information</h2>
+                    <p class="form-subtitle">Please provide your personal details for ID generation</p>
+                    
+                    <form id="enrollment-form">
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="firstName">First Name</label>
+                                    <div class="input-with-icon">
+                                        <i class="fas fa-user input-icon"></i>
+                                        <input type="text" id="firstName" placeholder="Enter your first name" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="lastName">Last Name</label>
+                                    <div class="input-with-icon">
+                                        <i class="fas fa-user input-icon"></i>
+                                        <input type="text" id="lastName" placeholder="Enter your last name" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="dob">Date of Birth</label>
+                                    <div class="input-with-icon">
+                                        <i class="fas fa-calendar input-icon"></i>
+                                        <input type="date" id="dob" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="gender">Gender</label>
+                                    <div class="input-with-icon">
+                                        <i class="fas fa-venus-mars input-icon"></i>
+                                        <select id="gender" required>
+                                            <option value="">Select Gender</option>
+                                            <option value="male">Male</option>
+                                            <option value="female">Female</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="emirates">Emirate</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-map-marker-alt input-icon"></i>
+                                <select id="emirates" required>
+                                    <option value="">Select Emirate</option>
+                                    <option value="DXB">Dubai</option>
+                                    <option value="AUH">Abu Dhabi</option>
+                                    <option value="SHJ">Sharjah</option>
+                                    <option value="AJM">Ajman</option>
+                                    <option value="FUJ">Fujairah</option>
+                                    <option value="RAK">Ras Al Khaimah</option>
+                                    <option value="UAQ">Umm Al Quwain</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="email">Email Address</label>
+                                    <div class="input-with-icon">
+                                        <i class="fas fa-envelope input-icon"></i>
+                                        <input type="email" id="email" placeholder="Enter your email" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-col">
+                                <div class="form-group">
+                                    <label for="phone">Phone Number</label>
+                                    <div class="input-with-icon">
+                                        <i class="fas fa-phone input-icon"></i>
+                                        <input type="tel" id="phone" placeholder="+971 50 123 4567" required>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="address">Address</label>
+                            <div class="input-with-icon">
+                                <i class="fas fa-home input-icon"></i>
+                                <input type="text" id="address" placeholder="Enter your full address" required>
+                            </div>
+                        </div>
+                        
+                        <button type="button" class="btn" id="generate-id-btn">
+                            <i class="fas fa-id-card"></i> Generate UAE ID
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Step 2: Biometrics -->
+                <div id="biometrics" class="hidden">
+                    <h2 class="form-title">Biometric Verification</h2>
+                    <p class="form-subtitle">Your generated UAE ID: <strong id="display-id">784-2000-1985-1234</strong></p>
+                    
+                    <div class="id-display">
+                        <div class="id-label">Your UAE National ID</div>
+                        <div class="id-number" id="generated-id">784 2000 1985 1234</div>
+                    </div>
+                    
+                    <p class="form-subtitle">Please capture clear images of both hands for biometric identification</p>
+                    
+                    <div class="hand-capture-container">
+                        <div class="hand-box">
+                            <div class="hand-placeholder" id="right-hand">
+                                <i class="fas fa-hand-point-right"></i>
+                                <img src="" alt="Right Hand Preview" class="hand-preview" id="right-preview">
+                            </div>
+                            <div class="hand-label">Left Hand</div>
+                            <button class="btn btn-outline" id="capture-right">
+                                <i class="fas fa-camera"></i> Capture
+                            </button>
+                            <button class="recapture-btn" id="recapture-right">
+                                <i class="fas fa-redo"></i> Recapture
+                            </button>
+                        </div>
+                        
+                        <div class="hand-box">
+                            <div class="hand-placeholder" id="left-hand">
+                                <i class="fas fa-hand-point-left"></i>
+                                <img src="" alt="Left Hand Preview" class="hand-preview" id="left-preview">
+                            </div>
+                            <div class="hand-label">Right Hand</div>
+                            <button class="btn btn-outline" id="capture-left">
+                                <i class="fas fa-camera"></i> Capture
+                            </button>
+                            <button class="recapture-btn" id="recapture-left">
+                                <i class="fas fa-redo"></i> Recapture
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="button-group">
+                        <button class="btn btn-outline" id="back-to-details">
+                            <i class="fas fa-arrow-left"></i> Back to Details
+                        </button>
+                        <button class="btn" id="submit-biometrics">
+                            Submit Biometrics <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Step 3: Confirmation -->
+                <div id="confirmation" class="hidden">
+                    <div class="success-message">
+                        <div class="success-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <h2 class="success-title">Enrollment Complete!</h2>
+                        <p class="success-text">Your UAE National ID has been successfully generated and biometric data captured.</p>
+                        
+                        <div class="id-display">
+                            <div class="id-label">Your UAE National ID</div>
+                            <div class="id-number" id="final-id">784 2000 1985 1234</div>
+                        </div>
+                        
+                        <p class="success-text">Your ID card will be delivered within 7-10 business days. You can track your application status using the ID number above.</p>
+                        
+                        <button class="btn" id="new-enrollment">
+                            <i class="fas fa-user-plus"></i> Start New Enrollment
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Camera Overlay -->
+    <div class="camera-overlay hidden" id="camera-overlay">
+        <div class="hand-instruction" id="hand-instruction">
+            Please position your right hand in the frame
+        </div>
+        <div class="camera-container">
+            <video id="camera-preview" autoplay playsinline></video>
+            <div class="close-camera" id="close-camera">
+                <i class="fas fa-times"></i>
+            </div>
+        </div>
+        <div class="camera-controls">
+            <div class="capture-btn" id="capture-btn">
+                <i class="fas fa-camera"></i>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const personalDetails = document.getElementById('personal-details');
+            const biometrics = document.getElementById('biometrics');
+            const confirmation = document.getElementById('confirmation');
+            const generateIdBtn = document.getElementById('generate-id-btn');
+            const backToDetailsBtn = document.getElementById('back-to-details');
+            const submitBiometricsBtn = document.getElementById('submit-biometrics');
+            const newEnrollmentBtn = document.getElementById('new-enrollment');
+            const rightHand = document.getElementById('right-hand');
+            const leftHand = document.getElementById('left-hand');
+            const generatedId = document.getElementById('generated-id');
+            const displayId = document.getElementById('display-id');
+            const finalId = document.getElementById('final-id');
+            const step1 = document.getElementById('step1');
+            const step2 = document.getElementById('step2');
+            const step3 = document.getElementById('step3');
+            const cameraOverlay = document.getElementById('camera-overlay');
+            const cameraPreview = document.getElementById('camera-preview');
+            const captureBtn = document.getElementById('capture-btn');
+            const closeCamera = document.getElementById('close-camera');
+            const captureRightBtn = document.getElementById('capture-right');
+            const captureLeftBtn = document.getElementById('capture-left');
+            const handInstruction = document.getElementById('hand-instruction');
+            const rightPreview = document.getElementById('right-preview');
+            const leftPreview = document.getElementById('left-preview');
+            
+            // State variables
+            let currentHand = null;
+            let stream = null;
+            let canvas = document.createElement('canvas');
+            let ctx = canvas.getContext('2d');
+            
+            // Generate random UAE ID (15 digits)
+            function generateUAEId(dob) {
+                // 1. Start with UAE prefix
+                let id = '784';
+                
+                // 2. Add birth year (YYYY from Date object)
+                const birthYear = new Date(dob).getFullYear();
+                id += birthYear;
+                
+                // 3. Generate 7 random digits
+                for (let i = 0; i < 7; i++) {
+                    id += Math.floor(Math.random() * 10);
+                }
+                
+                // 4. Calculate checksum (sum of all digits % 10)
+                const digits = id.split('').map(Number);
+                const sum = digits.reduce((acc, digit) => acc + digit, 0);
+                const checksum = sum % 10;
+                id += checksum;
+                
+                // 5. Format as 784-YYYY-XXXXXXX-C
+                return `${id.substring(0,3)} ${id.substring(3,7)} ${id.substring(7,11)} ${id.substring(11,15)}`;
+            }
+            
+            // Update progress steps
+            function updateProgress(step) {
+                step1.classList.remove('active');
+                step2.classList.remove('active');
+                step3.classList.remove('active');
+                
+                if (step >= 1) step1.classList.add('active');
+                if (step >= 2) step2.classList.add('active');
+                if (step >= 3) step3.classList.add('active');
+            }
+            
+            // Generate ID button click
+            generateIdBtn.addEventListener('click', function() {
+                // Form validation
+                const firstName = document.getElementById('firstName').value;
+                const lastName = document.getElementById('lastName').value;
+                const dob = document.getElementById('dob').value;
+                
+                if (!firstName || !lastName || !dob) {
+                    alert('Please fill in all required fields');
+                    return;
+                }
+                
+                // Generate ID
+                const uaeId = generateUAEId(dob);
+                generatedId.textContent = uaeId;
+                displayId.textContent = uaeId;
+                finalId.textContent = uaeId;
+                
+                // Show biometrics step
+                personalDetails.classList.add('hidden');
+                biometrics.classList.remove('hidden');
+                updateProgress(2);
+            });
+            
+            // Open camera for hand capture
+            function openCamera(hand) {
+                currentHand = hand;
+                handInstruction.textContent = `Please position your ${hand} hand in the frame`;
+                cameraOverlay.classList.remove('hidden');
+                
+                // Access camera
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(function(mediaStream) {
+                        stream = mediaStream;
+                        cameraPreview.srcObject = stream;
+                    })
+                    .catch(function(err) {
+                        console.error("Camera error:", err);
+                        alert("Could not access camera. Please ensure permissions are granted.");
+                        closeCamera.click();
+                    });
+            }
+            
+            function closeCameraHandler() {
+                cameraOverlay.classList.add('hidden');
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                    stream = null;
+                }
+            }
+
+            // Event listeners
+            captureRightBtn.addEventListener('click', () => openCamera('right'));
+            captureLeftBtn.addEventListener('click', () => openCamera('left'));
+            closeCamera.addEventListener('click', closeCameraHandler);
+
+            // Capture image
+    captureBtn.addEventListener('click', function() {
+        if (!stream) return;
+        
+        const canvas = document.createElement('canvas');
+        canvas.width = cameraPreview.videoWidth;
+        canvas.height = cameraPreview.videoHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(cameraPreview, 0, 0, canvas.width, canvas.height);
+        
+        const imageData = canvas.toDataURL('image/png');
+        const previewId = currentHand === 'right' ? 'right-preview' : 'left-preview';
+        const previewElement = document.getElementById(previewId);
+        const handBoxId = `${currentHand}-hand-box`;
+        
+        // Update preview
+        previewElement.src = imageData;
+        previewElement.style.display = 'block';
+        
+        // Update UI state
+        document.getElementById(handBoxId).classList.add('captured');
+        document.getElementById(`${currentHand}-hand`).querySelector('i').style.display = 'none';
+        
+        closeCameraHandler();
+    });
+    
+    // Recapture buttons
+    recaptureRightBtn.addEventListener('click', function() {
+        document.getElementById('right-hand-box').classList.remove('captured');
+        rightPreview.style.display = 'none';
+        document.getElementById('right-hand').querySelector('i').style.display = 'block';
+        openCamera('right');
+    });
+    
+    recaptureLeftBtn.addEventListener('click', function() {
+        document.getElementById('left-hand-box').classList.remove('captured');
+        leftPreview.style.display = 'none';
+        document.getElementById('left-hand').querySelector('i').style.display = 'block';
+        openCamera('left');
+    });
+    
+    // Navigation buttons
+    backToDetailsBtn.addEventListener('click', function() {
+        biometrics.classList.add('hidden');
+        personalDetails.classList.remove('hidden');
+        updateProgress(1);
+    });
+    
+    submitBiometricsBtn.addEventListener('click', function() {
+        if (!document.getElementById('right-hand-box').classList.contains('captured')) {
+            alert('Please capture your right hand image');
+            return;
+        }
+        
+        if (!document.getElementById('left-hand-box').classList.contains('captured')) {
+            alert('Please capture your left hand image');
+            return;
+        }
+        
+        biometrics.classList.add('hidden');
+        confirmation.classList.remove('hidden');
+        updateProgress(3);
+    });
+    
+    newEnrollmentBtn.addEventListener('click', function() {
+        // Reset form
+        document.getElementById('enrollment-form').reset();
+        biometrics.classList.add('hidden');
+        confirmation.classList.add('hidden');
+        personalDetails.classList.remove('hidden');
+        
+        // Reset biometrics
+        document.getElementById('right-hand-box').classList.remove('captured');
+        rightPreview.style.display = 'none';
+        document.getElementById('right-hand').querySelector('i').style.display = 'block';
+        
+        document.getElementById('left-hand-box').classList.remove('captured');
+        leftPreview.style.display = 'none';
+        document.getElementById('left-hand').querySelector('i').style.display = 'block';
+        
+        updateProgress(1);
+    });
+    
+    // Close camera button
+    closeCamera.addEventListener('click', closeCameraHandler);
+});
+    </script>
+</body>
+</html>
