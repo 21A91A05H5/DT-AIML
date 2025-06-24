@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UAE National ID Enrollment</title>
+</head>
+<body>
+    <h1>UAE National ID Enrollment</h1>
+    
+    <!-- Step 1: Personal Information -->
+    <div id="personal-details">
+        <h2>Personal Information</h2>
+        <form id="enrollment-form">
+            <div>
+                <label for="firstName">First Name:</label>
+                <input type="text" id="firstName" required>
+            </div>
+            
+            <div>
+                <label for="lastName">Last Name:</label>
+                <input type="text" id="lastName" required>
+            </div>
+            
+            <div>
+                <label for="dob">Date of Birth:</label>
+                <input type="date" id="dob" required>
+            </div>
+            
+            <div>
+                <label for="gender">Gender:</label>
+                <select id="gender" required>
+                    <option value="">Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                </select>
+            </div>
+            
+            <div>
+                <label for="emirates">Emirate:</label>
+                <select id="emirates" required>
+                    <option value="">Select Emirate</option>
+                    <option value="DXB">Dubai</option>
+                    <option value="AUH">Abu Dhabi</option>
+                    <option value="SHJ">Sharjah</option>
+                    <option value="AJM">Ajman</option>
+                    <option value="FUJ">Fujairah</option>
+                    <option value="RAK">Ras Al Khaimah</option>
+                    <option value="UAQ">Umm Al Quwain</option>
+                </select>
+            </div>
+            
+            <div>
+                <label for="email">Email Address:</label>
+                <input type="email" id="email" required>
+            </div>
+            
+            <div>
+                <label for="phone">Phone Number:</label>
+                <input type="tel" id="phone" placeholder="+971 50 123 4567" required>
+            </div>
+            
+            <div>
+                <label for="address">Address:</label>
+                <input type="text" id="address" required>
+            </div>
+            
+            <button type="button" id="generate-id-btn">Generate UAE ID</button>
+        </form>
+    </div>
+    
+    <!-- Step 2: Biometrics -->
+    <div id="biometrics" style="display:none;">
+        <h2>Biometric Verification</h2>
+        <p>Your generated UAE ID: <span id="display-id"></span></p>
+        
+        <div>
+            <h3>Please capture images of both hands</h3>
+            
+            <div>
+                <h4>Right Hand</h4>
+                <div id="right-hand">
+                    <img id="right-preview" style="display:none; max-width:200px;">
+                    <div>Hand placeholder</div>
+                </div>
+                <button id="capture-right">Capture Right Hand</button>
+                <button id="recapture-right" style="display:none;">Recapture</button>
+            </div>
+            
+            <div>
+                <h4>Left Hand</h4>
+                <div id="left-hand">
+                    <img id="left-preview" style="display:none; max-width:200px;">
+                    <div>Hand placeholder</div>
+                </div>
+                <button id="capture-left">Capture Left Hand</button>
+                <button id="recapture-left" style="display:none;">Recapture</button>
+            </div>
+            
+            <div>
+                <button id="back-to-details">Back to Details</button>
+                <button id="submit-biometrics">Submit Biometrics</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Step 3: Confirmation -->
+    <div id="confirmation" style="display:none;">
+        <h2>Enrollment Complete!</h2>
+        <p>Your UAE National ID has been successfully generated.</p>
+        <p>ID: <span id="final-id"></span></p>
+        <p>Your ID card will be delivered within 7-10 business days.</p>
+        <button id="new-enrollment">Start New Enrollment</button>
+    </div>
+    
+    <!-- Camera Overlay -->
+    <div id="camera-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); color:white; text-align:center;">
+        <h3 id="hand-instruction">Please position your hand in the frame</h3>
+        <video id="camera-preview" autoplay playsinline style="max-width:100%;"></video>
+        <button id="close-camera" style="position:absolute; top:20px; right:20px;">X</button>
+        <button id="capture-btn">Capture</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const personalDetails = document.getElementById('personal-details');
+            const biometrics = document.getElementById('biometrics');
+            const confirmation = document.getElementById('confirmation');
+            const generateIdBtn = document.getElementById('generate-id-btn');
+            const backToDetailsBtn = document.getElementById('back-to-details');
+            const submitBiometricsBtn = document.getElementById('submit-biometrics');
+            const newEnrollmentBtn = document.getElementById('new-enrollment');
+            const captureRightBtn = document.getElementById('capture-right');
+            const captureLeftBtn = document.getElementById('capture-left');
+            const recaptureRightBtn = document.getElementById('recapture-right');
+            const recaptureLeftBtn = document.getElementById('recapture-left');
+            const rightHand = document.getElementById('right-hand');
+            const leftHand = document.getElementById('left-hand');
+            const rightPreview = document.getElementById('right-preview');
+            const leftPreview = document.getElementById('left-preview');
+            const generatedId = document.getElementById('display-id');
+            const finalId = document.getElementById('final-id');
+            const cameraOverlay = document.getElementById('camera-overlay');
+            const cameraPreview = document.getElementById('camera-preview');
+            const captureBtn = document.getElementById('capture-btn');
+            const closeCamera = document.getElementById('close-camera');
+            const handInstruction = document.getElementById('hand-instruction');
+            
+            // State variables
+            let currentHand = null;
+            let stream = null;
+            let capturedImages = {
+                right: null,
+                left: null
+            };
+
+            // Generate UAE ID with checksum
+            function generateUAEId(dob) {
+                let id = '784'; // UAE prefix
+                const birthYear = new Date(dob).getFullYear();
+                id += birthYear.toString();
+                
+                // Generate 7 random digits
+                for (let i = 0; i < 7; i++) {
+                    id += Math.floor(Math.random() * 10);
+                }
+                
+                // Calculate checksum (sum of all digits % 10)
+                const digits = id.split('').map(Number);
+                const sum = digits.reduce((acc, digit) => acc + digit, 0);
+                id += sum % 10;
+                
+                return `${id.substring(0,3)} ${id.substring(3,7)} ${id.substring(7,14)} ${id.substring(14,15)}`;
+            }
+
+            // Open camera for hand capture
+            function openCamera(hand) {
+                currentHand = hand;
+                handInstruction.textContent = `Please position your ${hand} hand in the frame`;
+                cameraOverlay.style.display = 'block';
+                
+                // Stop any existing stream
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                }
+                
+                // Access camera
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(function(mediaStream) {
+                        stream = mediaStream;
+                        cameraPreview.srcObject = stream;
+                    })
+                    .catch(function(err) {
+                        console.error("Camera error:", err);
+                        alert("Could not access camera. Please ensure permissions are granted.");
+                        closeCameraHandler();
+                    });
+            }
+            
+            // Close camera handler
+            function closeCameraHandler() {
+                cameraOverlay.style.display = 'none';
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                    stream = null;
+                }
+                cameraPreview.srcObject = null;
+            }
+
+            // Generate ID button click
+            generateIdBtn.addEventListener('click', function() {
+                const firstName = document.getElementById('firstName').value;
+                const lastName = document.getElementById('lastName').value;
+                const dob = document.getElementById('dob').value;
+                
+                if (!firstName || !lastName || !dob) {
+                    alert('Please fill in all required fields');
+                    return;
+                }
+                
+                try {
+                    const uaeId = generateUAEId(dob);
+                    generatedId.textContent = uaeId;
+                    finalId.textContent = uaeId;
+                    
+                    personalDetails.style.display = 'none';
+                    biometrics.style.display = 'block';
+                } catch (error) {
+                    alert('Error generating ID. Please check your date of birth.');
+                }
+            });
+            
+            // Capture image
+            captureBtn.addEventListener('click', function() {
+                if (!stream) return;
+                
+                const canvas = document.createElement('canvas');
+                canvas.width = cameraPreview.videoWidth;
+                canvas.height = cameraPreview.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(cameraPreview, 0, 0, canvas.width, canvas.height);
+                
+                const imageData = canvas.toDataURL('image/jpeg', 0.8);
+                capturedImages[currentHand] = imageData;
+                
+                // Update preview
+                const previewElement = currentHand === 'right' ? rightPreview : leftPreview;
+                previewElement.src = imageData;
+                previewElement.style.display = 'block';
+                
+                // Update UI
+                const placeholderDiv = currentHand === 'right' 
+                    ? rightHand.querySelector('div') 
+                    : leftHand.querySelector('div');
+                placeholderDiv.style.display = 'none';
+                
+                // Show recapture button
+                const recaptureBtn = currentHand === 'right' ? recaptureRightBtn : recaptureLeftBtn;
+                recaptureBtn.style.display = 'inline-block';
+                
+                // Hide capture button
+                const captureBtn = currentHand === 'right' ? captureRightBtn : captureLeftBtn;
+                captureBtn.style.display = 'none';
+                
+                closeCameraHandler();
+            });
+            
+            // Recapture buttons
+            recaptureRightBtn.addEventListener('click', function() {
+                rightPreview.style.display = 'none';
+                rightHand.querySelector('div').style.display = 'block';
+                recaptureRightBtn.style.display = 'none';
+                captureRightBtn.style.display = 'inline-block';
+                openCamera('right');
+            });
+            
+            recaptureLeftBtn.addEventListener('click', function() {
+                leftPreview.style.display = 'none';
+                leftHand.querySelector('div').style.display = 'block';
+                recaptureLeftBtn.style.display = 'none';
+                captureLeftBtn.style.display = 'inline-block';
+                openCamera('left');
+            });
+            
+            // Capture buttons
+            captureRightBtn.addEventListener('click', function() {
+                openCamera('right');
+            });
+            
+            captureLeftBtn.addEventListener('click', function() {
+                openCamera('left');
+            });
+            
+            // Close camera button
+            closeCamera.addEventListener('click', closeCameraHandler);
+            
+            // Back to details
+            backToDetailsBtn.addEventListener('click', function() {
+                biometrics.style.display = 'none';
+                personalDetails.style.display = 'block';
+            });
+            
+            // Submit biometrics
+            submitBiometricsBtn.addEventListener('click', function() {
+                if (!capturedImages.right) {
+                    alert('Please capture your right hand image');
+                    return;
+                }
+                
+                if (!capturedImages.left) {
+                    alert('Please capture your left hand image');
+                    return;
+                }
+                
+                // Here you would typically send data to server
+                console.log('Submitting data:', {
+                    uaeId: finalId.textContent,
+                    rightHandImage: capturedImages.right,
+                    leftHandImage: capturedImages.left
+                });
+                
+                biometrics.style.display = 'none';
+                confirmation.style.display = 'block';
+            });
+            
+            // Start new enrollment
+            newEnrollmentBtn.addEventListener('click', function() {
+                // Reset form
+                document.getElementById('enrollment-form').reset();
+                confirmation.style.display = 'none';
+                personalDetails.style.display = 'block';
+                
+                // Reset biometrics
+                rightPreview.style.display = 'none';
+                rightHand.querySelector('div').style.display = 'block';
+                recaptureRightBtn.style.display = 'none';
+                captureRightBtn.style.display = 'inline-block';
+                
+                leftPreview.style.display = 'none';
+                leftHand.querySelector('div').style.display = 'block';
+                recaptureLeftBtn.style.display = 'none';
+                captureLeftBtn.style.display = 'inline-block';
+                
+                capturedImages = { right: null, left: null };
+            });
+        });
+    </script>
+</body>
+</html>
