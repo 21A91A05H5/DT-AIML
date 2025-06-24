@@ -449,25 +449,7 @@
             font-size: 2rem;
             cursor: pointer;
         }
-        .recapture-btn {
-            display: none;
-            margin-top: 10px;
-            background-color: #f44336;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
         
-        .hand-box.captured .recapture-btn {
-            display: inline-block;
-        }
-        
-        .hand-box.captured .capture-btn {
-            display: none;
-        }
-
         .hand-instruction {
             color: var(--white);
             margin-bottom: 20px;
@@ -675,9 +657,6 @@
                             <button class="btn btn-outline" id="capture-right">
                                 <i class="fas fa-camera"></i> Capture
                             </button>
-                            <button class="recapture-btn" id="recapture-right">
-                                <i class="fas fa-redo"></i> Recapture
-                            </button>
                         </div>
                         
                         <div class="hand-box">
@@ -688,9 +667,6 @@
                             <div class="hand-label">Right Hand</div>
                             <button class="btn btn-outline" id="capture-left">
                                 <i class="fas fa-camera"></i> Capture
-                            </button>
-                            <button class="recapture-btn" id="recapture-left">
-                                <i class="fas fa-redo"></i> Recapture
                             </button>
                         </div>
                     </div>
@@ -874,91 +850,79 @@
             closeCamera.addEventListener('click', closeCameraHandler);
 
             // Capture image
-    captureBtn.addEventListener('click', function() {
-        if (!stream) return;
-        
-        const canvas = document.createElement('canvas');
-        canvas.width = cameraPreview.videoWidth;
-        canvas.height = cameraPreview.videoHeight;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(cameraPreview, 0, 0, canvas.width, canvas.height);
-        
-        const imageData = canvas.toDataURL('image/png');
-        const previewId = currentHand === 'right' ? 'right-preview' : 'left-preview';
-        const previewElement = document.getElementById(previewId);
-        const handBoxId = `${currentHand}-hand-box`;
-        
-        // Update preview
-        previewElement.src = imageData;
-        previewElement.style.display = 'block';
-        
-        // Update UI state
-        document.getElementById(handBoxId).classList.add('captured');
-        document.getElementById(`${currentHand}-hand`).querySelector('i').style.display = 'none';
-        
-        closeCameraHandler();
-    });
-    
-    // Recapture buttons
-    recaptureRightBtn.addEventListener('click', function() {
-        document.getElementById('right-hand-box').classList.remove('captured');
-        rightPreview.style.display = 'none';
-        document.getElementById('right-hand').querySelector('i').style.display = 'block';
-        openCamera('right');
-    });
-    
-    recaptureLeftBtn.addEventListener('click', function() {
-        document.getElementById('left-hand-box').classList.remove('captured');
-        leftPreview.style.display = 'none';
-        document.getElementById('left-hand').querySelector('i').style.display = 'block';
-        openCamera('left');
-    });
-    
-    // Navigation buttons
-    backToDetailsBtn.addEventListener('click', function() {
-        biometrics.classList.add('hidden');
-        personalDetails.classList.remove('hidden');
-        updateProgress(1);
-    });
-    
-    submitBiometricsBtn.addEventListener('click', function() {
-        if (!document.getElementById('right-hand-box').classList.contains('captured')) {
-            alert('Please capture your right hand image');
-            return;
-        }
-        
-        if (!document.getElementById('left-hand-box').classList.contains('captured')) {
-            alert('Please capture your left hand image');
-            return;
-        }
-        
-        biometrics.classList.add('hidden');
-        confirmation.classList.remove('hidden');
-        updateProgress(3);
-    });
-    
-    newEnrollmentBtn.addEventListener('click', function() {
-        // Reset form
-        document.getElementById('enrollment-form').reset();
-        biometrics.classList.add('hidden');
-        confirmation.classList.add('hidden');
-        personalDetails.classList.remove('hidden');
-        
-        // Reset biometrics
-        document.getElementById('right-hand-box').classList.remove('captured');
-        rightPreview.style.display = 'none';
-        document.getElementById('right-hand').querySelector('i').style.display = 'block';
-        
-        document.getElementById('left-hand-box').classList.remove('captured');
-        leftPreview.style.display = 'none';
-        document.getElementById('left-hand').querySelector('i').style.display = 'block';
-        
-        updateProgress(1);
-    });
-    
-    // Close camera button
-    closeCamera.addEventListener('click', closeCameraHandler);
-});
+            captureBtn.addEventListener('click', function() {
+                if (!stream) return;
+                
+                const canvas = document.createElement('canvas');
+                canvas.width = cameraPreview.videoWidth;
+                canvas.height = cameraPreview.videoHeight;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(cameraPreview, 0, 0, canvas.width, canvas.height);
+                
+                const imageData = canvas.toDataURL('image/png');
+                const previewId = currentHand === 'right' ? 'right-preview' : 'left-preview';
+                const previewElement = document.getElementById(previewId);
+                
+                previewElement.src = imageData;
+                previewElement.style.display = 'block';
+                
+                // Hide the hand icon
+                const handElement = document.getElementById(`${currentHand}-hand`);
+                handElement.querySelector('i').style.display = 'none';
+                handElement.classList.add('captured');
+                
+                // Disable the capture button
+                document.getElementById(`capture-${currentHand}`).disabled = true;
+                
+                closeCameraHandler();
+            });
+            
+            // Back to details
+            backToDetailsBtn.addEventListener('click', function() {
+                biometrics.classList.add('hidden');
+                personalDetails.classList.remove('hidden');
+                updateProgress(1);
+            });
+            
+            // Submit biometrics
+            submitBiometricsBtn.addEventListener('click', function() {
+                if (!rightHand.classList.contains('captured')) {
+                    alert('Please capture your right hand image');
+                    return;
+                }
+                
+                if (!leftHand.classList.contains('captured')) {
+                    alert('Please capture your left hand image');
+                    return;
+                }
+                
+                biometrics.classList.add('hidden');
+                confirmation.classList.remove('hidden');
+                updateProgress(3);
+            });
+            
+            // Start new enrollment
+            newEnrollmentBtn.addEventListener('click', function() {
+                // Reset form
+                document.getElementById('enrollment-form').reset();
+                biometrics.classList.add('hidden');
+                confirmation.classList.add('hidden');
+                personalDetails.classList.remove('hidden');
+                
+                // Reset biometrics
+                rightHand.classList.remove('captured');
+                rightPreview.style.display = 'none';
+                rightHand.querySelector('i').style.display = 'block';
+                captureRightBtn.disabled = false;
+                
+                leftHand.classList.remove('captured');
+                leftPreview.style.display = 'none';
+                leftHand.querySelector('i').style.display = 'block';
+                captureLeftBtn.disabled = false;
+                
+                updateProgress(1);
+            });
+        });
     </script>
 </body>
 </html>
