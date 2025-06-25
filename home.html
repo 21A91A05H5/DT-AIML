@@ -266,6 +266,14 @@
             background-color: rgba(0, 128, 0, 0.1);
         }
 
+        .btn-danger {
+            background-color: var(--secondary);
+        }
+
+        .btn-danger:hover {
+            background-color: #cc0000;
+        }
+
         .id-display {
             background-color: #e6f7ee;
             border: 2px dashed var(--primary);
@@ -348,6 +356,19 @@
             height: 100%;
             object-fit: cover;
             display: none;
+        }
+
+        .hand-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+
+        .hand-buttons .btn {
+            margin-top: 0;
+            padding: 10px 15px;
+            font-size: 0.9rem;
         }
 
         .button-group {
@@ -506,6 +527,14 @@
 
             .hand-box {
                 min-width: 100%;
+            }
+
+            .hand-buttons {
+                flex-direction: column;
+            }
+
+            .hand-buttons .btn {
+                width: 100%;
             }
         }
     </style>
@@ -671,9 +700,14 @@
                                 <img src="" alt="Right Hand Preview" class="hand-preview" id="right-preview">
                             </div>
                             <div class="hand-label">Left Hand</div>
-                            <button class="btn btn-outline" id="capture-right">
-                                <i class="fas fa-camera"></i> Capture
-                            </button>
+                            <div class="hand-buttons">
+                                <button class="btn btn-outline" id="capture-right">
+                                    <i class="fas fa-camera"></i> Capture
+                                </button>
+                                <button class="btn btn-danger hidden" id="recapture-right">
+                                    <i class="fas fa-redo"></i> Retake
+                                </button>
+                            </div>
                         </div>
                         
                         <div class="hand-box">
@@ -682,9 +716,14 @@
                                 <img src="" alt="Left Hand Preview" class="hand-preview" id="left-preview">
                             </div>
                             <div class="hand-label">Right Hand</div>
-                            <button class="btn btn-outline" id="capture-left">
-                                <i class="fas fa-camera"></i> Capture
-                            </button>
+                            <div class="hand-buttons">
+                                <button class="btn btn-outline" id="capture-left">
+                                    <i class="fas fa-camera"></i> Capture
+                                </button>
+                                <button class="btn btn-danger hidden" id="recapture-left">
+                                    <i class="fas fa-redo"></i> Retake
+                                </button>
+                            </div>
                         </div>
                     </div>
                     
@@ -768,6 +807,8 @@
             const closeCamera = document.getElementById('close-camera');
             const captureRightBtn = document.getElementById('capture-right');
             const captureLeftBtn = document.getElementById('capture-left');
+            const recaptureRightBtn = document.getElementById('recapture-right');
+            const recaptureLeftBtn = document.getElementById('recapture-left');
             const handInstruction = document.getElementById('hand-instruction');
             const rightPreview = document.getElementById('right-preview');
             const leftPreview = document.getElementById('left-preview');
@@ -892,9 +933,35 @@
                 }
             }
 
-            // Event listeners
+            // Event listeners for capture buttons
             captureRightBtn.addEventListener('click', () => openCamera('right'));
             captureLeftBtn.addEventListener('click', () => openCamera('left'));
+
+            // Event listeners for recapture buttons
+            recaptureRightBtn.addEventListener('click', () => {
+                // Reset right hand capture
+                rightHand.classList.remove('captured');
+                rightPreview.style.display = 'none';
+                rightHand.querySelector('i').style.display = 'block';
+                captureRightBtn.classList.remove('hidden');
+                recaptureRightBtn.classList.add('hidden');
+                
+                // Open camera for recapture
+                openCamera('right');
+            });
+
+            recaptureLeftBtn.addEventListener('click', () => {
+                // Reset left hand capture
+                leftHand.classList.remove('captured');
+                leftPreview.style.display = 'none';
+                leftHand.querySelector('i').style.display = 'block';
+                captureLeftBtn.classList.remove('hidden');
+                recaptureLeftBtn.classList.add('hidden');
+                
+                // Open camera for recapture
+                openCamera('left');
+            });
+
             closeCamera.addEventListener('click', closeCameraHandler);
 
             // Capture image
@@ -914,13 +981,16 @@
                 previewElement.src = imageData;
                 previewElement.style.display = 'block';
                 
-                // Hide the hand icon
+                // Hide the hand icon and show captured state
                 const handElement = document.getElementById(`${currentHand}-hand`);
                 handElement.querySelector('i').style.display = 'none';
                 handElement.classList.add('captured');
                 
-                // Disable the capture button
-                document.getElementById(`capture-${currentHand}`).disabled = true;
+                // Toggle capture/recapture buttons
+                const captureBtnId = `capture-${currentHand}`;
+                const recaptureBtnId = `recapture-${currentHand}`;
+                document.getElementById(captureBtnId).classList.add('hidden');
+                document.getElementById(recaptureBtnId).classList.remove('hidden');
                 
                 closeCameraHandler();
             });
@@ -961,12 +1031,14 @@
                 rightHand.classList.remove('captured');
                 rightPreview.style.display = 'none';
                 rightHand.querySelector('i').style.display = 'block';
-                captureRightBtn.disabled = false;
+                captureRightBtn.classList.remove('hidden');
+                recaptureRightBtn.classList.add('hidden');
                 
                 leftHand.classList.remove('captured');
                 leftPreview.style.display = 'none';
                 leftHand.querySelector('i').style.display = 'block';
-                captureLeftBtn.disabled = false;
+                captureLeftBtn.classList.remove('hidden');
+                recaptureLeftBtn.classList.add('hidden');
                 
                 updateProgress(1);
             });
